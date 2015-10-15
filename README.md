@@ -1,2 +1,159 @@
-# crime-prediction
-CS281 Final Project to develop a new ML Model for predicting incidents of crime.
+---
+author:
+- |
+    [Alex Wang](mailto:alexwang@college.harvard.edu) and [Luis A.
+    Perez](mailto:luisperez@college.harvard.edu), Harvard University
+title: 'CS 281 Final Project Proposal: Crime Predictions'
+...
+
+Problem Statement
+=================
+
+We are interested in applying machine learning methods to datasets
+regarding crime (crime statistics in particular cities) and possible
+related factors (such as tweet data, income, etc.). Specifically, we are
+interested in investigating if it is possible to predict criminal events
+for a specific time and place in the future (for example, assigning a
+risk level for a shooting within the next week to different
+neighborhoods).\
+
+There is an abundance of data to incorporate into the model. Most
+notably, numerous cities, such as Chicago [^1] and New York [^2], have
+large datasets detailing crimes over the past decade. This data is
+broken down into type of crime (e.g. theft, murder, narcotics, etc.),
+time of day and year, geographic location, and more. Furthermore, cities
+have released a myriad of other datasets that may possibly relate:
+median income, location of police stations, etc [^3]. Combined with
+possible other outside sources, such as geo-located Tweets [^4],
+newspaper headlines, etc) there is a copious amount of data to engineer
+features from and incorporate. This problem area is interesting because
+of the dynamics that drive crime and the level of granularity needed.\
+
+Furthermore, this problem area is useful and novel. Being able to
+predict where crime will be most prevalent is of obvious benefit to a
+city and its citizens. The police force could allocate more resources to
+the predicted high-crime area in order to preempt criminal activity, and
+citizens would be safer by knowing what parts of a city they should
+avoid. However, in order to create actionable insights, the model
+created needs to be able to predict crime within a small time frame, for
+example around a day or week, and a small geographic region, e.g. a
+block or a neighborhood.\
+
+Having described the available data and the possible difficulties, we
+can now refine the questions to investigate in this project. First and
+foremost, we are interested in seeing if we can predict the criminal
+incidents, perhaps for a specific type of crime, for a small time frame
+and geographic region. Second, we are interested in learning which
+features have the most predictive power with respect to crime. Having an
+understanding of driving factors, cities can better work to mitigate the
+risk factors for crime.
+
+Approach
+========
+
+As a problem-driven project, a significant portion of this project will
+include implementing various regressions algorithms. The first challenge
+in this problem will be feature extraction. PCA and other methods to
+analyze correlation between features we extract, as well as simple data
+exploration methodologies (such as analyzing trends over-time, etc.)
+will be helpful for feature prediction.\
+
+For ML models, we will begin with simple linear regression (Bayesian) on
+the features we ultimately extract. We expect numerous features, so we
+will need to enforce sparsity via regularization or some form of
+dimensionality reduction. Ultimately we would like to try to implement a
+neural network, specifically a recurrent neural network, for practice
+and to see if they lead to improved performance. Our understanding is
+that RNNs are good for capturing patterns in time series data, which is
+how this data is structured. In that case we would implement the neural
+net in Torch. Beyond that, we will need to explore various other
+regression models to determine what is appropriate for the data and
+context. If time allows, we would also like to explore other models
+typically good for time series data, such as Hidden Markov Models or
+Gaussian Process, though we’re somewhat unfamiliar with both.\
+
+In the end, we will likely need to develop a more sophisticated model
+that more fully captures the dynamics of crime. For example, some
+research has been done into the mutually excitatory nature of crime,
+e.g. crime in one area causes surrounding areas to be more susceptible
+to crime. These types of modeling enhancements may lead to better
+predictive power. We expect to spend a good amount of time tweaking
+different model ideas, and measuring their performance.
+
+Evaluation
+==========
+
+The current standard in crime forecasting is hotspot mapping, the
+process of mapping out occurrences of crime to identify high crime
+areas. The thought, then, is that placing more officers or other
+preventative resources in that areas with historically high rates of
+crime will more significantly reduce crime. Though simple, in some
+specific cases, this method had 90% accuracy when using the previous
+year’s data to forecast the next year, according to one study. Combined
+with the fact that hotspot mapping is easy to do with modern software
+and easy to understand, it is certainly the baseline to beat.\
+
+The metric we plan on using is root-mean-square error between the
+predicted value and the true value for a given area. Since cities’ crime
+data goes back over a decade, we plan on withholding a few years’ data
+as a test set. The baseline machine learning algorithm will be simple
+Bayesian regression on our selected feature space. We’re still in the
+process of determining the evaluation plans for our more ambitious
+models, such as a RNN or a HMM.\
+
+There has been some work done already on this topic [^5] [^6], but not
+much. We were able to find one review paper that detailed various
+regression techniques employed already, including neural networks, but
+many of these were dated before the release of these large datasets and
+before the development of different flavors of neural nets. One recent
+paper[^7] we looked at incorporating Tweets into a model and found
+improvements, though they also did not incorporate all the data
+available at the time, suggesting that there is ample room for
+exploration in this domain.
+
+Collaboration Plan
+==================
+
+The work primarily falls into two divisions: feature engineering and
+machine learning. We both would like to do both aspects, so our plan is
+to each code up different regression models and each engineer features
+from different feature sets.
+
+-   Feature extraction from data sets, with particular emphasis on
+    newspaper headline extraction and data set merging (merge crime
+    statistics with income, etc.). Models to test include Gausiann
+    Process and Hidden Markov Models (for clustering).
+
+-   Feature extraction, in particular time series-like features, with
+    focus on specific types of crime. Likely to explore Bayesian linear
+    regression, as well as RNN.
+
+The code will be hosted publicly on gitHub (open source). The repo can
+be found here:
+
+[^1]: [City of Chicago Crime Dataset](https://data.cityofchicago.org/).
+    For the full link, see https://data.cityofchicago.org/
+
+[^2]: [New York Crime
+    Data](https://nycopendata.socrata.com/Public-Safety/Historical-New-York-City-Crime-Data/hqhv-9zeg).
+    For the full link, see
+    https://nycopendata.socrata.com/Public-Safety/Historical-New-York-City-Crime-Data/hqhv-9zeg
+
+[^3]: These data sets appear to all be released through the same
+    platform: [https://www.data.gov/open-gov/](OpenData)
+
+[^4]: [San Francisco Crime
+    Mapping](https://data.sfgov.org/Public-Safety/Map-Crime-Incidents-from-1-Jan-2003/gxxq-x39z)
+    -
+    Link:https://data.sfgov.org/Public-Safety/Map-Crime-Incidents-from-1-Jan-2003/gxxq-x39z
+
+[^5]: [A Novel Serial Crime Prediction Model Based on Bayesian Learning
+    Theory
+    ](http://ieeexplore.ieee.org.ezp-prod1.hul.harvard.edu/stamp/stamp.jsp?tp=&arnumber=5580971)
+
+[^6]: [Once Upon a Crime: Towards Crime Prediction from Demographics and
+    Mobile
+    Data](http://delivery.acm.org.ezp-prod1.hul.harvard.edu/10.1145/2670000/2663254/p427-bogomolov.pdf?ip=128.103.149.52&id=2663254&acc=ACTIVE%20SERVICE&key=C82FBC3DCC335AD2%2E4D4702B0C3E38B35%2E4D4702B0C3E38B35%2E4D4702B0C3E38B35&CFID=553305163&CFTOKEN=20331583&__acm__=1444871399_feb25f6bb65f577ea58bb1f29f2f176a)
+
+[^7]: [Automatic Crime Prediction Using Events Extracted from Twitter
+    Posts](http://link.springer.com/chapter/10.1007/978-3-642-29047-3_28)
