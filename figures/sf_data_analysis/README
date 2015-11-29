@@ -1,0 +1,19 @@
+Contains files pertaining to the San Francisco Crime Data.
+
+These are just simple heat-maps/analyses.
+
+Countplots: 
+Crimes are counted and grouped by either:
+	Day of Month
+	Outcome
+	Police District
+	Type
+	Year
+	Month
+	Month in a Particular Year
+
+
+The heatmaps are named as follows:
+	heat_map_MONTH_YEAR == Heatmap for a given MONTH,YEAR
+	heat_map_YEAR == Heatmap for the entire YEAR
+	heat_map_all_N == Discretized into NxN grid, heatmap for entire data set.
