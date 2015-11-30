@@ -1,5 +1,6 @@
 data/chicago.csv
-data/Crimes_-_*
+data/*
+!data/chicago_feats.pkl
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
