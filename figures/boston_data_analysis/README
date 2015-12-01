@@ -14,7 +14,3 @@ Crimes are counted and grouped by either:
 	Month in a Particular Year
 
 
-The heatmaps are named as follows:
-	heat_map_MONTH_YEAR == Heatmap for a given MONTH,YEAR
-	heat_map_YEAR == Heatmap for the entire YEAR
-	heat_map_all_N == Discretized into NxN grid, heatmap for entire data set.
