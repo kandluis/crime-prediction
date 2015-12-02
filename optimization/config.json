@@ -4,13 +4,37 @@
     "experiment-name" : "gaussian_process",
     "likelihood"      : "NOISELESS",
     "variables" : {
-        "x" : {
+        "n" : {
+            "type" : "INT",
+            "size" : 1,
+            "min"  : 2,
+            "max"  : 15
+        },
+        "l1" : {
             "type" : "FLOAT",
             "size" : 1,
-            "min"  : -5,
-            "max"  : 10
+            "min"  : 0,
+            "max"  : 15
         },
-        "y" : {
+        "l2" : {
+            "type" : "FLOAT",
+            "size" : 1,
+            "min"  : 0,
+            "max"  : 15
+        },
+        "l3" : {
+            "type" : "FLOAT",
+            "size" : 1,
+            "min"  : 0,
+            "max"  : 15
+        },
+        "horz" : {
+            "type" : "FLOAT",
+            "size" : 1,
+            "min"  : 0,
+            "max"  : 15
+        },
+        "sig_eps" : {
             "type" : "FLOAT",
             "size" : 1,
             "min"  : 0,
@@ -18,4 +42,3 @@
         }
     }
 }
-
