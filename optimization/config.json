@@ -13,31 +13,31 @@
         "l1" : {
             "type" : "FLOAT",
             "size" : 1,
-            "min"  : 0,
+            "min"  : 0.0001,
             "max"  : 100
         },
         "l2" : {
             "type" : "FLOAT",
             "size" : 1,
-            "min"  : 0,
+            "min"  : 0.0001,
             "max"  : 100
         },
         "l3" : {
             "type" : "FLOAT",
             "size" : 1,
-            "min"  : 0,
+            "min"  : 0.0001,
             "max"  : 100
         },
         "horz" : {
             "type" : "FLOAT",
             "size" : 1,
-            "min"  : 0,
+            "min"  : 0.0001,
             "max"  : 100
         },
         "sig_eps" : {
             "type" : "FLOAT",
             "size" : 1,
-            "min"  : 0,
+            "min"  : 0.0001,
             "max"  : 100
         }
     }
