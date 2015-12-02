@@ -55,7 +55,7 @@ Read in data
 import re
 import warnings
 
-bos_file = '../data/boston.csv'
+bos_file = '~/boston.csv'
 target_type = str  # The desired output type
 
 with warnings.catch_warnings(record=True) as ws:
@@ -222,9 +222,11 @@ def GaussianProcess(train, train_t, test, test_t, l,
 def optimizeGaussianProcess(n, l1, l2, l3, horz, sig_eps):
     # Bucketize the data as specified! By default, does Boston data.
     data = createBuckets(n)
+    print "Created Data!"
 
     # Split for latest year.
     train, train_t, test, test_t = split(data, 0)
+    print "Split Data!"
 
     # Calculate the likelihood
     l = np.array([l1,l2,l3])
@@ -232,6 +234,7 @@ def optimizeGaussianProcess(n, l1, l2, l3, horz, sig_eps):
                                  l, horz, sig_eps,
                                  predict = False, rmse = False)
     # The objective actually minimizes!
+    print "likelihood of {}".format(likelihood)
     return -1 * likelihood
 
 # Write a function like this called 'main'
