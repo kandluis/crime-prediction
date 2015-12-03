@@ -1,8 +1,10 @@
 '''
 Plotting utilities.
 
-Alex Wang (alexwang@college.harvard.edu)
-Luis Perez (luis.perez.live@gmail.com)
+Authors:
+    Alex Wang (alexwang@college.harvard.edu)
+    Luis Perez (luis.perez.live@gmail.com)
+Copyright 2015, Harvard University
 '''
 
 import matplotlib.pyplot as plt

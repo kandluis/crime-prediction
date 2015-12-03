@@ -3,6 +3,11 @@ Our GP implementations.
     other implementations:
     - scikit-learn
     - GPy
+
+Authors:
+    Alex Wang (alexwang@college.harvard.edu)
+    Luis Perez (luis.perez.live@gmail.com)
+Copyright 2015, Harvard University
 '''
 
 import numpy as np

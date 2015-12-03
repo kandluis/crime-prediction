@@ -1,18 +1,30 @@
 '''
 Script to process the boston data. Currently, parameters must be changed
 directly at the script level!
+
+To run the script, use the following command from the parent directory (ie.
+    make sure you're in the crime-predictions directory)
+    python -m src.boston_gp.py
+
+Authors:
+    Alex Wang (alexwang@college.harvard.edu)
+    Luis Perez (luis.perez.live@gmail.com)
+Copyright 2015, Harvard University
 '''
 
 import numpy as np
 import pandas as pd
 import re
 import warnings
+import os
 
 from . import util
+from . import plot
 from . import GP
 
 ''' Global Variables '''
-bos_file = '../data/boston.csv'  # Location of data
+
+bos_file = os.path.abspath('data/boston.csv')  # Location of data
 buckets = 15  # Number of buckets.
 
 # Square Exponential Kernel Parameters
@@ -26,7 +38,8 @@ sig_eps_f = lambda train_t: np.std(train_t)
 
 logTransform = False  # Should we do GP under the logspace?
 
-file_prefix = 'GPSE'  # Prefix to use for plots created in bos directory.
+# Prefix to use for plots created in bos directory.
+file_prefix = 'GPSEOptimizedGPy'
 
 ''' Read data '''
 target_type = str  # The desired output type
@@ -89,7 +102,7 @@ print "Finished processing Boston data..."
 
 # Split as specified by the user
 # default is 15, logSpace=True')
-data = util.createBuckets(good_data, n_buckets=buckets, logSpace=logSpace)
+data = util.createBuckets(good_data, n_buckets=buckets, logSpace=logTransform)
 train, train_t, test, test_t = util.split(data, 0)
 
 print "Finished splitting into specified regions..."
@@ -110,7 +123,8 @@ if logTransform:
 
 
 # Save the results to boston
-plotDistribution(predictions, test_t, 'boston', buckets, process=file_prefix)
+plot.plotDistribution(predictions, test_t, 'boston',
+                      buckets, process=file_prefix)
 print "Finished plotting the distributions. Results are saved..."
 
 # Contatenate new test matrix -- this is the expected input.
@@ -118,5 +132,5 @@ X_test = np.zeros((test.shape[0], test.shape[1] + 1)).astype(int)
 X_test[:, :-1] = test
 X_test[:, -1] = test_t
 
-plotHeatMaps(X_test, predictions, 'boston', buckets, process=file_prefix)
+plot.plotHeatMaps(X_test, predictions, 'boston', buckets, process=file_prefix)
 print "Finished plotting the heatmaps. Results are saved..."
