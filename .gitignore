@@ -65,4 +65,4 @@ target/
 # Ignore .csv files in data folder
 data/*.csv
 
-*output/*
+optimization/output/*.out
