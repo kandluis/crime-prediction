@@ -55,67 +55,72 @@ Read in data
 import re
 import warnings
 
-bos_file = '~/boston.csv'
-target_type = str  # The desired output type
+def readData():
 
-with warnings.catch_warnings(record=True) as ws:
-    warnings.simplefilter("always")
+    bos_file = '/home/luis/boston.csv'
+    target_type = str  # The desired output type
 
-    bos_data = pd.read_csv(bos_file, sep=",", header=0)
-    print("Warnings raised:", ws)
-    # We have an error on specific columns, try and load them as string
-    for w in ws:
-        s = str(w.message)
-        print("Warning message:", s)
-        match = re.search(r"Columns \(([0-9,]+)\) have mixed types\.", s)
-        if match:
-            columns = match.group(1).split(',') # Get columns as a list
-            columns = [int(c) for c in columns]
-            print("Applying %s dtype to columns:" % target_type, columns)
-            bos_data.iloc[:,columns] = bos_data.iloc[:,columns].astype(target_type)
+    with warnings.catch_warnings(record=True) as ws:
+      warnings.simplefilter("always")
 
-'''
-Featurize data
-'''
-# temporal features
-# day of week
-day = np.array(bos_data.DAY_WEEK)
-day[ day == "Sunday"] = 0
-day[ day == "Monday"] = 1
-day[ day == "Tuesday"] = 2
-day[ day == "Wednesday"] = 3
-day[ day == "Thursday"] = 4
-day[ day == "Friday"] = 5
-day[ day == "Saturday"] = 6
+      bos_data = pd.read_csv(bos_file, sep=",", header=0)
+      print("Warnings raised:", ws)
+      # We have an error on specific columns, try and load them as string
+      for w in ws:
+          s = str(w.message)
+          print("Warning message:", s)
+          match = re.search(r"Columns \(([0-9,]+)\) have mixed types\.", s)
+          if match:
+              columns = match.group(1).split(',') # Get columns as a list
+              columns = [int(c) for c in columns]
+              print("Applying %s dtype to columns:" % target_type, columns)
+              bos_data.iloc[:,columns] = bos_data.iloc[:,columns].astype(target_type)
 
-# Split mm/dd/yyyy xx:yy:zz AM/PM into components
-date_time = np.array([x.split() for x in bos_data.FROMDATE])
-date = date_time[:,0]
-time = date_time[:,1]
-tod = date_time[:,2]
+    '''
+    Featurize data
+    '''
+    # temporal features
+    # day of week
+    day = np.array(bos_data.DAY_WEEK)
+    day[ day == "Sunday"] = 0
+    day[ day == "Monday"] = 1
+    day[ day == "Tuesday"] = 2
+    day[ day == "Wednesday"] = 3
+    day[ day == "Thursday"] = 4
+    day[ day == "Friday"] = 5
+    day[ day == "Saturday"] = 6
 
-# month, day, year
-date = np.array([x.split('/') for x in date])
-month = [int(x) for x in date[:,0]]
-dom = [int(x) for x in date[:,1]]
-year = [int(x) for x in date[:,2]]
-# months since Jan 2012
-time_feat = np.subtract(year, 2012)*12 + month
+    # Split mm/dd/yyyy xx:yy:zz AM/PM into components
+    date_time = np.array([x.split() for x in bos_data.FROMDATE])
+    date = date_time[:,0]
+    time = date_time[:,1]
+    tod = date_time[:,2]
 
-# time of day
-time_c = [x.split(':') for x in time]
-time = [int(x[1]) if (y == 'AM' and int(x[0]) == 12) else 60*int(x[0])+int(x[1])
-        if (y =='AM' and int(x[0]) != 12) or (int(x[0]) == 12 and y == 'PM') else 12*60+60*int(x[0])+int(x[1])
-        for x,y in zip(time_c, tod)]
+    # month, day, year
+    date = np.array([x.split('/') for x in date])
+    month = [int(x) for x in date[:,0]]
+    dom = [int(x) for x in date[:,1]]
+    year = [int(x) for x in date[:,2]]
+    # months since Jan 2012
+    time_feat = np.subtract(year, 2012)*12 + month
 
-# grab the features we want
-data_unnorm = np.transpose(np.vstack((time_feat, bos_data.X, bos_data.Y))).astype(float)
-# remove NaNs
-good_data = data_unnorm[~(np.isnan(data_unnorm[:,1]))]
+    # time of day
+    time_c = [x.split(':') for x in time]
+    time = [int(x[1]) if (y == 'AM' and int(x[0]) == 12) else 60*int(x[0])+int(x[1])
+          if (y =='AM' and int(x[0]) != 12) or (int(x[0]) == 12 and y == 'PM') else 12*60+60*int(x[0])+int(x[1])
+          for x,y in zip(time_c, tod)]
+
+    # grab the features we want
+    data_unnorm = np.transpose(np.vstack((time_feat, bos_data.X, bos_data.Y))).astype(float)
+    # remove NaNs
+    good_data = data_unnorm[~(np.isnan(data_unnorm[:,1]))]
+
+    return good_data
 
 '''
 Count data for each cell. If logSpace is true, returns log values.
 '''
+good_data = readData()
 def createBuckets(n_buckets = 15, logSpace = True):
     data_b = bucket(good_data, [1, 2], n_buckets)
 
@@ -132,11 +137,13 @@ def createBuckets(n_buckets = 15, logSpace = True):
                 count = data_b[ (data_b[:,0] == i+1) &
                                 (data_b[:,1] == j) &
                                 (data_b[:,2] == k)]
+                #print count
+                #print count.shape
                 # buckets[i][j][k] = np.size(count,0)
-                buckets2[i*(n_buckets * n_buckets)+j*(n_buckets)+k][0] = i
-                buckets2[i*(n_buckets * n_buckets)+j*(n_buckets)+k][1] = j
-                buckets2[i*(n_buckets * n_buckets)+j*(n_buckets)+k][2] = k
-                buckets2[i*(n_buckets * n_buckets)+j*(n_buckets)+k][3] = np.size(count,0)
+                buckets2[i*(n_buckets * n_buckets)+j*(n_buckets)+k, 0] = i
+                buckets2[i*(n_buckets * n_buckets)+j*(n_buckets)+k, 1] = j
+                buckets2[i*(n_buckets * n_buckets)+j*(n_buckets)+k, 2] = k
+                buckets2[i*(n_buckets * n_buckets)+j*(n_buckets)+k, 3] = np.size(count,0)
     print np.shape(buckets2)
 
     if logSpace:
@@ -169,8 +176,12 @@ def ker_se(x, y, l, horz = 1.0):
     diff_vec = np.reshape(cols - rows, (n*m, np.shape(t)[2]))
 
     M = np.diag(l)
+    # print l
+    # print M
 
     # use multiply and sum to calculate matrix product
+    print M.shape
+    print diff_vec.shape
     s = np.multiply(-.5, np.sum(np.multiply(diff_vec, np.transpose(np.dot(M, np.transpose(diff_vec)))), axis=1))
     se = np.reshape(np.multiply(horz, np.exp(s)), (n, m))
 
@@ -221,7 +232,7 @@ def GaussianProcess(train, train_t, test, test_t, l,
 
 def optimizeGaussianProcess(n, l1, l2, l3, horz, sig_eps):
     # Bucketize the data as specified! By default, does Boston data.
-    data = createBuckets(n)
+    data = createBuckets(n_buckets=n)
     print "Created Data!"
 
     # Split for latest year.
@@ -229,10 +240,10 @@ def optimizeGaussianProcess(n, l1, l2, l3, horz, sig_eps):
     print "Split Data!"
 
     # Calculate the likelihood
-    l = np.array([l1,l2,l3])
+    l = [l1, l2, l3]
     likelihood = GaussianProcess(train, train_t, test, test_t,
                                  l, horz, sig_eps,
-                                 predict = False, rmse = False)
+                                 predict = False, rmse = False)[0]
     # The objective actually minimizes!
     print "likelihood of {}".format(likelihood)
     return -1 * likelihood
@@ -242,5 +253,5 @@ def main(job_id, params):
     print 'Job #%d' % job_id
     print params
     return optimizeGaussianProcess(
-      params['n'], params['l1'], params['l2'],
-      params['l3'], params['horz'], params['sig_eps'])
+      params['n'][0], params['l1'][0], params['l2'][0],
+      params['l3'][0], params['horz'][0], params['sig_eps'][0])
