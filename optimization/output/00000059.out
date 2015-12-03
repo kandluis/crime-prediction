@@ -1,0 +1,18 @@
+Job launching after 0.11 seconds in submission.
+Running python job.
+Changed into dir /home/luis/Dropbox/OnlineDocuments/HarvardSchoolWork/Fall2015/cs281/finalproject/crime-prediction/optimization
+Importing optimize.py
+Running optimize.main()
+Got result 1472.56543038
+Completed successfully in 4.14 seconds. [{u'main': 1472.5654303798026}]
+('Warnings raised:', [<warnings.WarningMessage object at 0x7f1ef9a604d0>])
+('Warning message:', 'Columns (10) have mixed types. Specify dtype option on import or set low_memory=False.')
+("Applying <type 'str'> dtype to columns:", [10])
+Job #59
+{u'sig_eps': array([ 146.90551964]), u'n': array([3]), u'l2': array([ 28.7036783]), u'l3': array([ 73.28689781]), u'l1': array([ 72.16117118]), u'horz': array([ 0.0001])}
+(396, 4)
+Created Data!
+Split Data!
+(3, 3)
+(99225, 3)
+likelihood of -1472.56543038

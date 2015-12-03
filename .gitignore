@@ -65,4 +65,5 @@ target/
 # Ignore .csv files in data folder
 data/*.csv
 
-optimization/output/*.out
+# We wanted to ignore output, but now I'm adding results just so we have a record of them!
+# optimization/output/*.out
