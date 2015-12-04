@@ -213,7 +213,7 @@ The above data has been processed in a way that allows us to create \(n\times n\
 
 We now present some figures to help us understand our data. Figure [fig:sf<sub>1</sub>00] shows the histogram of the data for San Francisco when partitioned with \(n=10\).
 
-![Distribution of Crime Over Artificial Regions for the City of San Francisco<span data-label="fig:sf100"></span>](latex/sf_n10.png "fig:") ![Distribution of Crime Over Artificial Regions for the City of San Francisco<span data-label="fig:sf100"></span>](latex/sf_n20.png "fig:")
+![Distribution of Crime Over Artificial Regions for the City of San Francisco<span data-label="fig:sf100"></span>](latex/update/sf_n10.png "fig:") ![Distribution of Crime Over Artificial Regions for the City of San Francisco<span data-label="fig:sf100"></span>](latex/update/sf_n20.png "fig:")
 
 We can explain the cyclic nature of the data extremely simply - most of the crime reported occurs in the central region of the city. The regions are numbered from the bottom right corner geographically, and continue westward until they fall outside the specified region, then moving upward to the next row. Therefore, we can imagine how moving in this fashion would lead to the above pattern in the data. Intuitively, however, we also have that most of the crime appears to occur in the northern region of San Francisco.
 
@@ -225,7 +225,7 @@ Boston
 
 We now report some baselines results. We partition the city data into an \(n \times n\) grid for \(n \in [1, 5, 10, 25, 50, 75, 100]\). Then for each grid, we compute the number of crimes per month over the span of the entire dataset, approximately three years. We use a random \(80\%\) of the data for training ridge regression (due to the few data points:  36), and then compute the RMSE on the test set. We then average the RMSE over each square of the grid. Below we plot average RMSE over the entire grid vs \(n\):
 
-![RMSE vs Bucket Size \(n\) for Boston<span data-label="fig:bosrmse"></span>](latex/boston_ridge.png)
+![RMSE vs Bucket Size \(n\) for Boston<span data-label="fig:bosrmse"></span>](latex/update/boston_ridge.png)
 
 Figure [fig:bos<sub>r</sub>mse] reveals a pathology in this method: the RMSE decreases towards 0 as we increase \(n\). We are creating smaller and smaller buckets, so that for large \(n\), each bucket contains only a few data points while most contain 0. The Boston dataset in particular contains  250,000 datapoints. Spread across the \(100 \times 100\) buckets per timeframe and \(36\) time frames means that by far most buckets have 0 crimes. Then the ridge regressor learns to predict 0 for most buckets, and gets a decent RMSE because even when there is a crime and it predicts 0, its error is small. Our hope is that Gaussian processes will not possess this pathology.
 
@@ -244,7 +244,7 @@ San Francisco
 
 The process is similar to that used with Boston, though we show results only for \(n \in [1,2,\cdots,10,20,\cdots,50]\). The testing data hold out is the most recent year. Data for San Francisco exists from early 2003, and we can see Figure [fig:sf<sub>1</sub>00] for a distribution on the crime in the city.
 
-![Average RMSE and Max RMSE on San Francisco Training Sample<span data-label="fig:sfrmse"></span>](latex/sf_linear.png)
+![Average RMSE and Max RMSE on San Francisco Training Sample<span data-label="fig:sfrmse"></span>](latex/update/sf_linear.png)
 
 |:-----:|:-------------:|
 | **n** |  **avg RMSE** |
