@@ -246,7 +246,7 @@ San Francisco
 
 The process is similar to that used with Boston, though we show results only for \(n \in [1,2,\cdots,10,20,\cdots,50]\). The testing data hold out is the most recent year. Data for San Francisco exists from early 2003, and we can see Figure [fig:sf<sub>1</sub>00] for a distribution on the crime in the city.
 
-![Average RMSE and Max RMSE on San Francisco Training Sample<span data-label="fig:sfrmse"></span>](sf_linear.png)
+![Average RMSE and Max RMSE on San Francisco Training Sample<span data-label="fig:sfrmse"></span>](latex/sf_linear.png)
 
 |:-----:|:-------------:|
 | **n** |  **avg RMSE** |
