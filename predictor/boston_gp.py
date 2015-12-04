@@ -4,7 +4,7 @@ directly at the script level!
 
 To run the script, use the following command from the parent directory (ie.
     make sure you're in the crime-predictions directory)
-    python -m src.boston_gp
+    python -m predictor.boston_gp
 
 Authors:
     Alex Wang (alexwang@college.harvard.edu)
