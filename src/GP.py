@@ -11,7 +11,9 @@ Copyright 2015, Harvard University
 '''
 
 import numpy as np
+import GPy
 from . import util
+from . import plot
 
 
 def ker_se(x, y, l, horz=1.0):
@@ -112,3 +114,64 @@ def optimizeGaussianProcess(data, n, l1, l2, l3, horz, sig_eps,
                                  l, horz, sig_eps,
                                  predict=False, rmse=False)
     return likelihood
+
+
+def run_gp(good_data, buckets, l, horz, sig_eps_f, logTransform, file_prefix, city):
+    '''
+    Runs our typical GP training process.
+    '''
+    # Split as specified by the user
+    # default is 15, logSpace=True')
+    data = util.createBuckets(
+        good_data, n_buckets=buckets, logSpace=logTransform)
+    train, train_t, test, test_t = util.split(data, 0)
+
+    print "Finished splitting into specified regions..."
+
+    # Calculate sig_eps
+    sig_eps = sig_eps_f(train_t)
+
+    # Run the gaussian process
+    predictions, rmse, likelihood = GaussianProcess(
+        train, train_t, test, test_t, l, horz, sig_eps)
+
+    print "Finishes training the GP Process, and generating the predictions..."
+
+    # Only do the below if logspace !
+    if logTransform:
+        test_t = np.exp(test_t)
+        predictions = np.exp(predictions)
+
+    # Save the results to boston
+    plot.plotDistribution(predictions, test_t, city,
+                          buckets, process=file_prefix)
+    print "Finished plotting the distributions. Results are saved..."
+
+    # Contatenate new test matrix -- this is the expected input.
+    X_test = np.zeros((test.shape[0], test.shape[1] + 1)).astype(int)
+    X_test[:, :-1] = test
+    X_test[:, -1] = test_t
+
+    plot.plotHeatMaps(X_test, predictions, city,
+                      buckets, process=file_prefix)
+    print "Finished plotting the heatmaps. Results are saved..."
+
+    # Repeat the process with Gpy
+    kern = GPy.kern.RBF(input_dim=3, variance=horz, lengthscale=l[0])
+    train_t = train_t.reshape((train_t.shape[0], 1))
+    m = GPy.models.GPRegression(train, train_t, kern)
+    m.Gaussian_noise.variance.constrain_fixed(train_t.std())
+
+    print "Finished training GPy."
+
+    predictions_optimal = m.predict(test)[0].reshape(
+        (predictions_optimal.shape[0]))
+
+    print "Finished GPy predictions."
+
+    plot.plotDistribution(predictions_optimal, test_t, city, buckets,
+                          process='GPy' + file_prefix)
+    print "Finished GPy Distribution Plots..."
+    plot.plotHeatMaps(X_test, predictions_optimal, city, buckets,
+                      process='GPy' + file_prefix)
+    print "Finished GPy Heatmaps"
