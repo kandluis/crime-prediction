@@ -1,10 +1,8 @@
----
-author:
-- |
+Crime Predictions
+=================
+Authors:
     [Alex Wang](mailto:alexwang@college.harvard.edu) and [Luis A.
     Perez](mailto:luisperez@college.harvard.edu), Harvard University
-title: 'CS 281 Final Project Proposal: Crime Predictions'
-...
 
 Required Package
 ================
