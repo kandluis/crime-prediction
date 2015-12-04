@@ -6,6 +6,19 @@ author:
 title: 'CS 281 Final Project Proposal: Crime Predictions'
 ...
 
+Required Package
+================
+Running the code in this repository requires the installation of:
+    - numpy
+    - matplotlib
+    - seaborn
+    - GPy
+    - pandas
+    - pickle
+
+Code is contained either in the notebook/ directory (iPython Notebooks)
+or in predictor/ directory (source code for predictor).
+
 Problem Statement
 =================
 
@@ -157,3 +170,98 @@ be found here:
 
 [^7]: [Automatic Crime Prediction Using Events Extracted from Twitter
     Posts](http://link.springer.com/chapter/10.1007/978-3-642-29047-3_28)
+
+
+Abstract
+======
+
+Though average crime rates in the United States have been in the decline for the last few years , it is still useful to many groups, such as law enforcement, city officials, home buyers, etc., to be able to predict where and when crime will occur. We develop a model to predict future crime incidence at a future time given a geographical location, leveraging historical crime data from the cities of Boston, Chicago, and San Francisco. We take a Bayesian non-parametric approach to the problem of interpolation on crime data from these cities. We explore Gaussian Processes with simple closed form kernels which have proven effective at inferring CO2 levels . We compare these models to current baseline approaches which consists of linear regression on crime data, partitioned by region.
+
+Proposal Modifications
+======================
+
+The largest modification between our project now and the proposal consists of dropping the requirement of implementing a neural network or a hidden markov model. Instead, we plan to focus primarily on Gaussian processes, and only considering other models if there is extra time to do so. The main reason for this change is the suggestion made by Finale, as well as the success of analytically solvable GPs in predicting time series data. Therefore, we expect to study variants of the standard covariance kernel for GPs, reporting the results of these models as applied across our three cities.
+
+Another major modification to our proposal, and a concern noted in our original feedback, was simplification of the data sources we are drawing together. Previously we had noted that we would harness the full capacity of the open city data movement, by layer information about property values, community center locations, geo-located Tweets, etc. After a more thorough investigation of the data, we found this to be infeasible for many reasons, and we are focusing on the crime data itself. First, the data often was limited to only one year, while our crime data extended back several years, meaning that in order to incorporate other features, we would have to throw away a portion of our most relevant statistic, the crime data itself. Second, the data provided varied widely between cities. Though one city might provide information about property values, another city did not but provided information about police station locations instead. These inconsistencies made it difficult to apply our methods to multiple cities, something we found undesirable.
+
+The baseline comparison remains linear regression, and we present those results below. We expect well implemented GPs to outperform the baseline, and GPs which take into account the interrelation between geographical regions to outperform all others.
+
+Data Collection and Processing
+==============================
+
+We expect to explore three sets of data, all currently publicly available. These datasets mostly conform to the same standards, so the fields we seek to use are available across all these datasets
+
+1.  [City of Chicago Crime Dataset](https://data.cityofchicago.org/Public-Safety/Crimes-2001-to-present/ijzp-q8t2?q=crime). The relevant data includes: longitude, latitude, time, date, and type of crime. The set contains a total of approximately 6 million records, dating back to 2001. We remove outliers in any of the above fields form the dataset.
+
+2.  [San Francisco Crime Mapping](https://data.sfgov.org/Public-Safety/Map-Crime-Incidents-from-1-Jan-2003/gxxq-x39z): Again, the relevant data includes: longitude, latitude, time, date, and type of crime. In this data set, we also drop outliers. The total size is 1.8 million crime incidents.
+
+3.  [Boston Crime Incident Reports](https://data.cityofboston.gov/Public-Safety/Crime-Incident-Reports/7cdf-6fgx): appoximately \(250,000\) entries after cleaning, dating back to 2012 to present.
+
+The above data has been processed in a way that allows us to create \(n\times n\) time-series over \(n \times n\) discrete regions for each geographical city.
+
+1.  The data is partitioned by region. We can imagine overlaying an \(n \times n\) grid on top of a city and then constructing a time series only from those values that occur within each grid square. We then attempt to run linear regression on each such time series.
+
+2.  Time is discretized into a couple of columns to allow for variability that depends on more that just the overall trend in the data. However, we do merge the time into a single continuous variable which counts the number of minutes since the earliest data point.
+
+    1.  We have a column specifying the month, for \(m \in [1,12] \cap \mathbb{Z}\), mapping \(1\) to January.
+
+    2.  We have a column specifying the day of the month, for \(d \in [1,31] \cap \mathbb{Z}\).
+
+    3.  We have a column specifying the year. The way this works is we specify the number of years since the earliest data point in our data set.
+
+    The above information will be use as we attempt to discretize our time predictions further. The goal is to help create a system which can predict crime down to the month, week, or day if possible!
+
+3.  In the end, we collect a total of \(n \times n\) time series. Each time series is consists of samples from our data set that accumulate the number of crimes in a given week per region. We therefore create a total of \(n \times n\) time series, each of length of up to \(12 \times 12\) points for the data sets.
+
+We now present some figures to help us understand our data. Figure [fig:sf<sub>1</sub>00] shows the histogram of the data for San Francisco when partitioned with \(n=10\).
+
+![Distribution of Crime Over Artificial Regions for the City of San Francisco<span data-label="fig:sf100"></span>](latex/sf_n10.png "fig:") ![Distribution of Crime Over Artificial Regions for the City of San Francisco<span data-label="fig:sf100"></span>](latex/sf_n20.png "fig:")
+
+We can explain the cyclic nature of the data extremely simply - most of the crime reported occurs in the central region of the city. The regions are numbered from the bottom right corner geographically, and continue westward until they fall outside the specified region, then moving upward to the next row. Therefore, we can imagine how moving in this fashion would lead to the above pattern in the data. Intuitively, however, we also have that most of the crime appears to occur in the northern region of San Francisco.
+
+Baseline Data
+=============
+
+Boston
+------
+
+We now report some baselines results. We partition the city data into an \(n \times n\) grid for \(n \in [1, 5, 10, 25, 50, 75, 100]\). Then for each grid, we compute the number of crimes per month over the span of the entire dataset, approximately three years. We use a random \(80\%\) of the data for training ridge regression (due to the few data points:  36), and then compute the RMSE on the test set. We then average the RMSE over each square of the grid. Below we plot average RMSE over the entire grid vs \(n\):
+
+![RMSE vs Bucket Size \(n\) for Boston<span data-label="fig:bosrmse"></span>](latex/boston_ridge.png)
+
+Figure [fig:bos<sub>r</sub>mse] reveals a pathology in this method: the RMSE decreases towards 0 as we increase \(n\). We are creating smaller and smaller buckets, so that for large \(n\), each bucket contains only a few data points while most contain 0. The Boston dataset in particular contains  250,000 datapoints. Spread across the \(100 \times 100\) buckets per timeframe and \(36\) time frames means that by far most buckets have 0 crimes. Then the ridge regressor learns to predict 0 for most buckets, and gets a decent RMSE because even when there is a crime and it predicts 0, its error is small. Our hope is that Gaussian processes will not possess this pathology.
+
+|:-----:|:--------------:|
+| **n** |  **avg RMSE**  |
+|   1   |  1254.35693616 |
+|   5   |  36.8720866748 |
+|   10  |  15.6527848706 |
+|   25  |  3.55986509579 |
+|   50  |  1.29333739045 |
+|   75  |  0.72462817042 |
+|  100  | 0.502453904579 |
+
+San Francisco
+-------------
+
+The process is similar to that used with Boston, though we show results only for \(n \in [1,2,\cdots,10,20,\cdots,50]\). The testing data hold out is the most recent year. Data for San Francisco exists from early 2003, and we can see Figure [fig:sf<sub>1</sub>00] for a distribution on the crime in the city.
+
+![Average RMSE and Max RMSE on San Francisco Training Sample<span data-label="fig:sfrmse"></span>](sf_linear.png)
+
+|:-----:|:-------------:|
+| **n** |  **avg RMSE** |
+|   1   | 676.610276256 |
+|   5   | 57.9066942345 |
+|   10  |  18.802226607 |
+|   20  |  7.0541635899 |
+|   30  |  4.0393275858 |
+|   40  |  2.7812162903 |
+
+Future Work
+===========
+
+Our next step is fairly clear: begin exploring and understanding Gaussian processes.
+
+One particular area of interests for us lies in exploring the city of Chicago. We’ve calculated baselines above for both Boston and San Francisco, so it shouldn’t be difficult to replicate our work for the Chicago crime data. The only small issue we have is that Chicago has significantly more data, on the order of magnitude of gigabytes. We expect that in order to process this dataset, we will need to either partition it by year, which would limit our ability to train a model over the entire dataset, or move onto a cloud-platform such as AWS, Microsoft Azure, or a Harvard cluster. Any feedback regarding the feasibility of the latter would be greatly appreciated.
+
+
