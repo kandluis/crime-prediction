@@ -4,7 +4,7 @@ directly at the script level!
 
 To run the script, use the following command from the parent directory (ie.
     make sure you're in the crime-predictions directory)
-    python -m src.boston_gp.py
+    python -m src.boston_gp
 
 Authors:
     Alex Wang (alexwang@college.harvard.edu)
@@ -25,16 +25,16 @@ from . import GP
 ''' Global Variables '''
 
 bos_file = os.path.abspath('data/boston.csv')  # Location of data
-buckets = 15  # Number of buckets.
+buckets = 11  # Number of buckets.
 
 # Square Exponential Kernel Parameters
 # These are the optimal parameters for n = 10 (we can try with other
 # values too)
-l = [9620.11949755, 9620.11949755, 9620.11949755]
-horz = 0.82754075018
+l = [9.164520,  0.296120, 10.153288]
+horz = 33.522111
 
 # This is a function that takes as input the training data results.
-sig_eps_f = lambda train_t: np.std(train_t)
+sig_eps_f = lambda train_t: 105.693084
 
 logTransform = False  # Should we do GP under the logspace?
 
@@ -134,3 +134,23 @@ X_test[:, -1] = test_t
 
 plot.plotHeatMaps(X_test, predictions, 'boston', buckets, process=file_prefix)
 print "Finished plotting the heatmaps. Results are saved..."
+
+# Repeat the process with Gpy
+import GPy as gp
+kern = gp.kern.RBF(input_dim=3, variance=horz, lengthscale=l[0])
+train_t = train_t.reshape((train_t.shape[0], 1))
+m = gp.models.GPRegression(train, train_t, kern)
+m.Gaussian_noise.variance.constrain_fixed(train_t.std())
+
+print "Finished training GPy."
+
+predictions_optimal = m.predict(test)[0]
+
+print "Finished GPy predictions."
+
+plot.plotDistribution(predictions_optimal, test_t, 'boston', buckets,
+                      process='GPy' + file_prefix)
+print "Finished GPy Distribution Plots..."
+plot.plotHeatMaps(X_test, predictions_optimal, 'boston', buckets,
+                  process='GPy' + file_prefix)
+print "Finished GPy Heatmaps"

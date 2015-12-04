@@ -10,6 +10,10 @@ Copyright 2015, Harvard University
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
+import os
+
+# So we know how the data is supposed to be mapped
+from .util import columns
 
 
 def createHeatMap(X):
@@ -47,9 +51,11 @@ def plotDistribution(predict, true, city, n, process='GP'):
     plt.xlabel('Compressed Features')
     plt.ylabel('Probability')
     plt.legend()
-    plt.savefig('../figures/{}_results/{}_n={}_periods={}.png'.format(
+    savefile = os.path.abspath('figures/{}_results/{}_n={}_periods={}.png'.format(
         city, process, n, 12))
+    plt.savefig(savefile)
     plt.close()
+    print "Distribution saved to {}".format(savefile)
 
 
 def plotHeatMaps(X_test, predict, city, n, process='GP'):
@@ -61,7 +67,7 @@ def plotHeatMaps(X_test, predict, city, n, process='GP'):
     # Attach the predictions to the data
     trueValues = np.copy(X_test)
     predictedValues = np.copy(X_test)
-    predictedValues[:, columns['count']] = predict
+    predictedValues[:, columns['count']] = predict.reshape((predict.shape[0]))
 
     # Now we want to plot the heatmaps for the predictions/actual data
     # by time period
@@ -75,9 +81,11 @@ def plotHeatMaps(X_test, predict, city, n, process='GP'):
             if m.sum() > 0:
                 sns.heatmap(m)
                 plt.title('True Density Distribution in Month {}'.format(month))
-                plt.savefig('../figures/{}_results/{}_heatmap_true_n={}_t={}.png'.format(
+                savefile = os.path.abspath('figures/{}_results/{}_heatmap_true_n={}_t={}.png'.format(
                     city, process, n, month))
+                plt.savefig(savefile)
                 plt.close()
+                print "True heatmap saved to {}".format(savefile)
 
             plt.clf()
             m = createHeatMap(predictedValues[selected, :])
@@ -85,6 +93,8 @@ def plotHeatMaps(X_test, predict, city, n, process='GP'):
                 sns.heatmap(m)
                 plt.title(
                     'Predicted Density Distribution in Month {}'.format(month))
-                plt.savefig('../figures/{}_results/{}_heatmap_pred_n={}_t={}.png'.format(
+                savefile = os.path.abspath('figures/{}_results/{}_heatmap_pred_n={}_t={}.png'.format(
                     city, process, n, month))
+                plt.savefig(savefile)
                 plt.close()
+                print "Predictions heatmap saved to {}".format(savefile)
