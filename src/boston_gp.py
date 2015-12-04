@@ -23,25 +23,32 @@ from . import GP
 ''' Global Variables '''
 
 bos_file = os.path.abspath('data/boston.csv')  # Location of data
-buckets = 11  # Number of buckets.
+buckets = 10  # Number of buckets.
 
 # Square Exponential Kernel Parameters
 # These are the optimal parameters for n = 10 (we can try with other
 # values too)
-l = [9.164520,  0.296120, 10.153288]
-horz = 33.522111
+# BAYESIAN
+# l = [9.164520,  0.296120, 10.153288]
+# horz = 33.522111
+# GPy
+l = [0.82754075018, 0.82754075018, 0.82754075018]
+horz = 9620.11949755
 
 # This is a function that takes as input the training data results.
-sig_eps_f = lambda train_t: 105.693084
+# BAYESIAN
+# sig_eps_f = lambda train_t: 105.693084
+# GPy
+sig_eps_f = lambda train_t: train_t.std()
 
 logTransform = False  # Should we do GP under the logspace?
 
 # Prefix to use for plots created in bos directory.
-file_prefix = 'GPSEOptimizedBayesTrain'
+file_prefix = 'GPSEOptimizedGPyTrain'
 
 
 def read_data(bos_file):
-''' Read data '''
+    ''' Read data '''
     target_type = str  # The desired output type
     with warnings.catch_warnings(record=True) as ws:
         warnings.simplefilter("always")

@@ -165,7 +165,7 @@ def run_gp(good_data, buckets, l, horz, sig_eps_f, logTransform, file_prefix, ci
     print "Finished training GPy."
 
     predictions_optimal = m.predict(test)[0].reshape(
-        (predictions_optimal.shape[0]))
+        (test_t.shape[0]))
 
     print "Finished GPy predictions."
 

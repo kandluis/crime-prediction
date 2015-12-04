@@ -25,21 +25,28 @@ from . import GP
 
 sfdata_file = os.path.abspath(
     '../cs281_data/large_data/sfclean.pk')  # Location of data
-buckets = 11  # Number of buckets.
+buckets = 10  # Number of buckets.
 
 # Square Exponential Kernel Parameters
 # These are the optimal parameters for n = 10 (we can try with other
 # values too)
-l = [9.164520,  0.296120, 10.153288]
-horz = 33.522111
+# BAYESIAN
+# l = [9.164520,  0.296120, 10.153288]
+# horz = 33.522111
+# GPy
+l = [0.82754075018, 0.82754075018, 0.82754075018]
+horz = 9620.11949755
 
 # This is a function that takes as input the training data results.
-sig_eps_f = lambda train_t: 105.693084
+# BAYESIAN
+# sig_eps_f = lambda train_t: 105.693084
+# GPy
+sig_eps_f = lambda train_t: train_t.std()
 
 logTransform = False  # Should we do GP under the logspace?
 
 # Prefix to use for plots created in bos directory.
-file_prefix = 'GPSEOptimizedBayesTrain'
+file_prefix = 'GPSEOptimizedGPyTrain'
 
 
 def createDataMatrix(data):
@@ -56,15 +63,16 @@ def createDataMatrix(data):
 
 
 def read_data(sfdata_file):
-''' Read in data '''
-# Let's make a plot for some values of N to see if the data works out...
+    ''' Read in data '''
+    # Let's make a plot for some values of N to see if the data works out...
     with open(sfdata_file) as fp:
         data = pickle.load(fp)
         # For sfdata, need to remove outliers
         data = data[-120 > data.Longitude][data.Longitude > (-130)]
         data = data[data.Latitude > 37][data.Latitude < 40]
 
-    good_data = createDataMatrix(data)
+    return (createDataMatrix(data))
+
 
 print "Finished processing San Franscisco data..."
 
