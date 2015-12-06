@@ -117,7 +117,8 @@ def optimizeGaussianProcess(data, n, l1, l2, l3, horz, sig_eps,
     return likelihood
 
 
-def run_gp(good_data, buckets, l, horz, sig_eps_f, logTransform, file_prefix, city):
+def run_gp(good_data, buckets, l, horz, sig_eps_f, logTransform,
+           file_prefix, city, GPy=False):
     '''
     Runs our typical GP training process.
     '''
@@ -162,25 +163,26 @@ def run_gp(good_data, buckets, l, horz, sig_eps_f, logTransform, file_prefix, ci
     print "Finished plotting the heatmaps. Results are saved..."
 
     # Repeat the process with Gpy
-    start = time.clock()
-    kern = GPy.kern.RBF(input_dim=3, variance=horz, lengthscale=l[0])
-    train_t = train_t.reshape((train_t.shape[0], 1))
-    m = GPy.models.GPRegression(train, train_t, kern)
-    m.Gaussian_noise.variance.constrain_fixed(train_t.std())
-    end = time.clock()
+    if testGPy:
+        start = time.clock()
+        kern = GPy.kern.RBF(input_dim=3, variance=horz, lengthscale=l[0])
+        train_t = train_t.reshape((train_t.shape[0], 1))
+        m = GPy.models.GPRegression(train, train_t, kern)
+        m.Gaussian_noise.variance.constrain_fixed(train_t.std())
+        end = time.clock()
 
-    print "Finished training GPy in {}...".format(end - start)
+        print "Finished training GPy in {}...".format(end - start)
 
-    start = time.clock()
-    predictions_optimal = m.predict(test)[0].reshape(
-        (test_t.shape[0]))
-    end = time.clock()
+        start = time.clock()
+        predictions_optimal = m.predict(test)[0].reshape(
+            (test_t.shape[0]))
+        end = time.clock()
 
-    print "Finished GPy predictions in {}...".format(end - start)
+        print "Finished GPy predictions in {}...".format(end - start)
 
-    plot.plotDistribution(predictions_optimal, test_t, city, buckets,
+        plot.plotDistribution(predictions_optimal, test_t, city, buckets,
+                              process='GPy' + file_prefix)
+        print "Finished GPy Distribution Plots..."
+        plot.plotHeatMaps(X_test, predictions_optimal, city, buckets,
                           process='GPy' + file_prefix)
-    print "Finished GPy Distribution Plots..."
-    plot.plotHeatMaps(X_test, predictions_optimal, city, buckets,
-                      process='GPy' + file_prefix)
-    print "Finished GPy Heatmaps"
+        print "Finished GPy Heatmaps"

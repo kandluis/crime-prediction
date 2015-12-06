@@ -23,7 +23,7 @@ from . import GP
 ''' Global Variables '''
 
 bos_file = os.path.abspath('data/boston.csv')  # Location of data
-buckets = 10  # Number of buckets.
+buckets = 15  # Number of buckets.
 
 # Square Exponential Kernel Parameters
 # These are the optimal parameters for n = 10 (we can try with other
