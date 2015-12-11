@@ -67,3 +67,6 @@ data/*.csv
 
 # We wanted to ignore output, but now I'm adding results just so we have a record of them!
 # optimization/output/*.out
+
+# Ignore PDF
+*.pdf
