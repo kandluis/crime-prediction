@@ -70,3 +70,6 @@ data/*.csv
 
 # Ignore PDF
 *.pdf
+
+# Ignore DS_Store
+*.DS_Store
