@@ -73,3 +73,11 @@ data/*.csv
 
 # Ignore DS_Store
 *.DS_Store
+
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.out
+*.synctex.gz
